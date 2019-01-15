@@ -1,9 +1,12 @@
 import React from 'react';
 
 const InCommon = (props) => {
+    console.log(props)
+    props.allData.search1.
+    
     return(
     <ul>
-        <li>{props.title}  </li>
+        <li>{}</li>
     </ul>
     )
 }

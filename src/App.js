@@ -6,14 +6,14 @@ import Axios from 'axios'
 import api_keys from './.api_config'
 import CastResults from './components/CastResults'
 import CrewResults from './components/CrewResults'
-
+import InCommon from './components/InCommon'
 
 
 const TMDBURL = "http://api.tmdb.org/3/search/person?"
 
 const IMGURL = "https://image.tmdb.org/t/p/w780/"
 
-const TMBDACTORURL= "https://api.themoviedb.org/3/person/59216/?api_key=6d4efb86084cebd2619bb03acbf81ab4"
+// const TMBDACTORURL= "https://api.themoviedb.org/3/person/59216/?api_key=6d4efb86084cebd2619bb03acbf81ab4"
 
 const TMDB_KEY = api_keys.tmdb_key
 
@@ -46,6 +46,9 @@ class App extends Component {
 
     allCredits[`search${searchNumber}`].castCredits = this.castMap(credits)
     allCredits[`search${searchNumber}`].crewCredits = this.crewMap(credits)
+    allCredits[`search${searchNumber}`].castIds = credits.cast.map((film)=>film.id)
+    allCredits[`search${searchNumber}`].crewIds = credits.crew.map((film)=>film.id)
+    
     this.setState({...this.state, allCredits:allCredits})
     console.log(this.state.allCredits)
   }
@@ -133,6 +136,8 @@ class App extends Component {
 
   render() {
     
+
+
     return (
       
       <div className="App">
@@ -163,6 +168,9 @@ class App extends Component {
               ? this.state.allCredits.search2.crewCredits
               :null}
          </div>
+         <InCommon 
+            allCredits={this.state.allCredits}
+         />
          <Search 
           searchNumber={1}
           handleInputChange={this.handleInputChange}
