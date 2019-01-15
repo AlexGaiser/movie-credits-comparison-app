@@ -3,7 +3,10 @@ import React from 'react'
 
 const SearchResults = (props) => {
     return(
-      <div className="actor-searchbox" onClick={()=>props.displayCredits(props.actorId)}>
+      <div className="actor-searchbox" onClick={()=>{
+        props.displayCredits(props.actorId, props.searchNumber)
+        props.setName()
+        }}>
         <img className="profile-pic" src={props.image} alt={props.name}></img>
         <h3 className="actor-searchname">{props.name}</h3>
         <p>{props.actorId}</p>
