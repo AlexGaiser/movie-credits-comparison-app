@@ -28,7 +28,8 @@ class App extends Component {
     this.state={
         param1: '',
         param2: '',
-        creditsList:'credits'
+        creditsList:'credits',
+        isLoaded:false
     }
   }
   
@@ -42,38 +43,26 @@ class App extends Component {
     const response = await Axios(`https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=6d4efb86084cebd2619bb03acbf81ab4`)
 
     const credits = response.data
-    console.log(credits)
 
     allCredits[`search${searchNumber}`].castCredits = this.castMap(credits)
     allCredits[`search${searchNumber}`].crewCredits = this.crewMap(credits)
-    allCredits[`search${searchNumber}`].castIds = credits.cast.map((film)=>film.id)
-    allCredits[`search${searchNumber}`].crewIds = credits.crew.map((film)=>film.id)
     
     this.setState({...this.state, allCredits:allCredits})
-    console.log(this.state.allCredits)
+    // console.log(this.state.allCredits)
   }
-  // displayCreditsActor2 = async (actorId)=>{
-  //   console.log(actorId)
-  //   const response = await Axios(`https://api.themoviedb.org/3/person/${actorId}/combined_credits?api_key=6d4efb86084cebd2619bb03acbf81ab4`)
 
-  //   const credits = response.data
-  //   console.log(credits)
-  //   let creditsListActor2= this.castMap(credits)
-  //   let crewCreditsActor2 = this.crewMap(credits)
-    
-  //   this.setState({...this.state, creditsList: creditsListActor1, crewCredits: crewCreditsActor1})
-  // }
   castMap=(credits) =>{
+    
     if(credits.cast){
+      console.log(credits)
       return credits.cast.map((cast)=>{
-        if(cast.title){
           return (<CastResults 
+             key={cast.credit_id}
              id={cast.id}
-             title={cast.title}
-             year={cast.release_date}
+             title={cast.media_type==='tv'? cast.name: cast.title}
+             year={cast.media_type==='tv'? 'First aired: ' + cast.first_air_date :cast.release_date}
              character={cast.character}
           />)
-        }
       })
     }
   }
@@ -82,6 +71,7 @@ class App extends Component {
     if(credits.crew){
       return credits.crew.map((crew)=>{
         return(<CrewResults 
+          key={crew.credit_id}
           id={crew.id}
           job={crew.job}
           title={crew.media_type==='tv'? crew.name: crew.title}
@@ -92,7 +82,7 @@ class App extends Component {
   }
   
 
-  fetchWikipedia= async (event, searchNumber)=>{
+  fetchWikipedia = async (event, searchNumber)=>{
     event.preventDefault()
     const searchTerm= (this.state.searchValue).split(' ').join('%20')
     // console.log(`${TMDBURL}${TMDB_KEY}&query=${searchTerm}`);
@@ -127,23 +117,39 @@ class App extends Component {
         })
       
     }) 
-    // this.setState({...this.state,searchResults: response.data.query.search})
-
-    // this.setState({searchValue: ''})
-
   }
+  
 
-
-  render() {
-    
-
-
+  render(){
     return (
       
       <div className="App">
          {/* <h1>Search={this.state.searchValue}</h1> */}
-         <div className="credits">
-         <h2>{this.state.allCredits
+        
+         <InCommon 
+            title={'In Common'}
+            // renderInCommon={this.renderInCommon}
+            allCredits={{...this.state.allCredits}}
+         />
+         <Search 
+          searchNumber={1}
+          handleInputChange={this.handleInputChange}
+          fetchWikipedia={this.fetchWikipedia} 
+          value={this.state.searchValue}
+         />
+         <Search 
+          searchNumber={2}
+          handleInputChange={this.handleInputChange}
+          fetchWikipedia={this.fetchWikipedia} 
+          value={this.state.searchValue}
+        />
+        <h1>SearchResults</h1>
+        <div className="search-results">{this.state.resultsList}</div>
+
+        <div className="credits-box">
+        <div className="credits">
+         <h2>{
+            this.state.allCredits
             ? this.state.allCredits.search1.name
             : null}</h2>
          <h3>Cast Credits: </h3>
@@ -168,29 +174,10 @@ class App extends Component {
               ? this.state.allCredits.search2.crewCredits
               :null}
          </div>
-         <InCommon 
-            allCredits={this.state.allCredits}
-         />
-         <Search 
-          searchNumber={1}
-          handleInputChange={this.handleInputChange}
-          fetchWikipedia={this.fetchWikipedia} 
-          value={this.state.searchValue}
-         />
-         <Search 
-          searchNumber={2}
-          handleInputChange={this.handleInputChange}
-          fetchWikipedia={this.fetchWikipedia} 
-          value={this.state.searchValue}
-        />
-        <h1>SearchResults</h1>
-       
-        {this.state.resultsList}
+      </div>
       </div>
     );
   }
 }
 
 export default App;
-
-
